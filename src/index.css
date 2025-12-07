@@ -5,6 +5,9 @@
 @import '@fontsource/inter/500.css';
 @import '@fontsource/inter/600.css';
 @import '@fontsource/inter/700.css';
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -46,13 +49,13 @@
     --input: 222 30% 18%;
     --ring: 199 89% 48%;
 
-    --radius: 0.75rem;
+    --radius: 2.125rem;
 
     --glow-primary: 0 0 20px hsl(199 89% 48% / 0.3);
     --glow-accent: 0 0 20px hsl(35 100% 50% / 0.3);
 
-    --font-mono: 'JetBrains Mono', monospace;
-    --font-sans: 'Inter', system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+    --font-sans: Montserrat, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
 
     --sidebar-background: 222 47% 8%;
     --sidebar-foreground: 210 40% 98%;
@@ -62,6 +65,21 @@
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 222 30% 18%;
     --sidebar-ring: 199 89% 48%;
+    --shadow-sm: 0px 1px 44.5px 4px hsla(0, 0%, 0%, 0.64);
+    --shadow: 0px 1px 89px 4px hsla(0, 0%, 0%, 0.64);
+    --shadow-md: 0px 1px 133.5px 4px hsla(0, 0%, 0%, 0.64);
+    --shadow-lg: 0px 1px 222.5px 4px hsla(0, 0%, 0%, 0.64);
+    --font-serif: "Cormorant Garamond", ui-serif, Georgia, Cambria, Times New Roman, Times, serif;
+  }
+  .dark {
+    --font-sans: Montserrat, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    --radius: 2.125rem;
+    --shadow-sm: 0px 1px 44.5px 4px hsla(0, 0%, 0%, 0.64);
+    --shadow: 0px 1px 89px 4px hsla(0, 0%, 0%, 0.64);
+    --shadow-md: 0px 1px 133.5px 4px hsla(0, 0%, 0%, 0.64);
+    --shadow-lg: 0px 1px 222.5px 4px hsla(0, 0%, 0%, 0.64);
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+    --font-serif: "Cormorant Garamond", ui-serif, Georgia, Cambria, Times New Roman, Times, serif;
   }
 }
 
