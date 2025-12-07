@@ -5,10 +5,12 @@ import { CategoryFilter } from "@/components/CategoryFilter";
 import { ProcedureCard } from "@/components/ProcedureCard";
 import { SearchBar } from "@/components/SearchBar";
 import { StatsCards } from "@/components/StatsCards";
-import { VehicleMake, VehicleModel, ServiceCategory, vehicleDatabase } from "@/data/vehicleData";
+import { VehicleMake, VehicleModel, ServiceCategory } from "@/data/vehicleData";
+import { useVehicleData } from "@/contexts/VehicleDataContext";
 import { Database, Search, Filter } from "lucide-react";
 
 const Index = () => {
+  const { makes } = useVehicleData();
   const [selectedMake, setSelectedMake] = useState<VehicleMake | null>(null);
   const [selectedModel, setSelectedModel] = useState<VehicleModel | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<ServiceCategory | 'all'>('all');
@@ -27,10 +29,10 @@ const Index = () => {
     if (selectedMake) {
       return selectedMake.models.flatMap(m => m.procedures);
     }
-    return vehicleDatabase.flatMap(make => 
+    return makes.flatMap(make => 
       make.models.flatMap(model => model.procedures)
     );
-  }, [selectedMake, selectedModel]);
+  }, [selectedMake, selectedModel, makes]);
 
   // Filter procedures
   const filteredProcedures = useMemo(() => {
@@ -55,7 +57,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header totalMakes={makes.length} totalModels={makes.reduce((acc, m) => acc + m.models.length, 0)} />
       
       <main className="container mx-auto px-4 py-8">
         {/* Hero Section */}
