@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
-import { vehicleDatabase, VehicleMake, VehicleModel } from "@/data/vehicleData";
-import { ChevronDown, Car } from "lucide-react";
+import { VehicleMake, VehicleModel } from "@/data/vehicleData";
+import { useVehicleData } from "@/contexts/VehicleDataContext";
+import { Car } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -14,12 +15,13 @@ interface VehicleSelectorProps {
 }
 
 export function VehicleSelector({ onSelect }: VehicleSelectorProps) {
+  const { makes } = useVehicleData();
   const [selectedMake, setSelectedMake] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<string>("");
 
   const currentMake = useMemo(() => 
-    vehicleDatabase.find(v => v.make === selectedMake) || null,
-    [selectedMake]
+    makes.find(v => v.make === selectedMake) || null,
+    [selectedMake, makes]
   );
 
   const currentModel = useMemo(() =>
@@ -30,7 +32,7 @@ export function VehicleSelector({ onSelect }: VehicleSelectorProps) {
   const handleMakeChange = (value: string) => {
     setSelectedMake(value);
     setSelectedModel("");
-    const make = vehicleDatabase.find(v => v.make === value) || null;
+    const make = makes.find(v => v.make === value) || null;
     onSelect(make, null);
   };
 
@@ -54,7 +56,7 @@ export function VehicleSelector({ onSelect }: VehicleSelectorProps) {
             </div>
           </SelectTrigger>
           <SelectContent className="bg-popover border-border">
-            {vehicleDatabase.map((vehicle) => (
+            {makes.map((vehicle) => (
               <SelectItem 
                 key={vehicle.make} 
                 value={vehicle.make}
