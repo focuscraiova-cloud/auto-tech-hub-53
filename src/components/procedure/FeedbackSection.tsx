@@ -8,6 +8,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { MessageSquare, Send, Loader2, CheckCircle, User } from 'lucide-react';
+import { z } from 'zod';
+
+const feedbackSchema = z.object({
+  content: z.string()
+    .trim()
+    .min(10, 'Feedback must be at least 10 characters')
+    .max(2000, 'Feedback must be less than 2000 characters'),
+  feedbackType: z.enum(['tip', 'correction', 'question'])
+});
 
 interface Feedback {
   id: string;
@@ -17,7 +26,6 @@ interface Feedback {
   created_at: string;
   profile: {
     full_name: string | null;
-    email: string | null;
   } | null;
 }
 
@@ -34,12 +42,14 @@ export function FeedbackSection({ procedureId, variantId }: FeedbackSectionProps
   const [content, setContent] = useState('');
   const [feedbackType, setFeedbackType] = useState<string>('tip');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchFeedbacks();
   }, [procedureId]);
 
   const fetchFeedbacks = async () => {
+    // Only fetch full_name to avoid exposing email
     const { data } = await supabase
       .from('procedure_feedback')
       .select(`
@@ -49,8 +59,7 @@ export function FeedbackSection({ procedureId, variantId }: FeedbackSectionProps
         status,
         created_at,
         profile:profiles (
-          full_name,
-          email
+          full_name
         )
       `)
       .eq('procedure_id', procedureId)
@@ -63,7 +72,15 @@ export function FeedbackSection({ procedureId, variantId }: FeedbackSectionProps
   };
 
   const handleSubmit = async () => {
-    if (!content.trim() || !user) return;
+    if (!user) return;
+
+    // Validate input
+    const validation = feedbackSchema.safeParse({ content, feedbackType });
+    if (!validation.success) {
+      setValidationError(validation.error.errors[0].message);
+      return;
+    }
+    setValidationError(null);
 
     setIsSubmitting(true);
     
@@ -73,8 +90,8 @@ export function FeedbackSection({ procedureId, variantId }: FeedbackSectionProps
         procedure_id: procedureId,
         variant_id: variantId || null,
         user_id: user.id,
-        content: content.trim(),
-        feedback_type: feedbackType,
+        content: validation.data.content,
+        feedback_type: validation.data.feedbackType,
         status: 'pending'
       });
 
@@ -133,29 +150,41 @@ export function FeedbackSection({ procedureId, variantId }: FeedbackSectionProps
           </div>
           
           <Textarea
-            placeholder="Share a tip, suggest a correction, or ask a question..."
+            placeholder="Share a tip, suggest a correction, or ask a question... (10-2000 characters)"
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={(e) => {
+              setContent(e.target.value);
+              setValidationError(null);
+            }}
             rows={3}
+            maxLength={2000}
           />
           
-          <Button 
-            onClick={handleSubmit} 
-            disabled={!content.trim() || isSubmitting}
-            className="w-full sm:w-auto"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Submitting...
-              </>
-            ) : (
-              <>
-                <Send className="h-4 w-4 mr-2" />
-                Submit Feedback
-              </>
-            )}
-          </Button>
+          {validationError && (
+            <p className="text-sm text-destructive">{validationError}</p>
+          )}
+          
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">
+              {content.length}/2000 characters
+            </span>
+            <Button 
+              onClick={handleSubmit} 
+              disabled={content.trim().length < 10 || isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                <>
+                  <Send className="h-4 w-4 mr-2" />
+                  Submit Feedback
+                </>
+              )}
+            </Button>
+          </div>
         </div>
 
         {/* Approved Feedbacks */}
