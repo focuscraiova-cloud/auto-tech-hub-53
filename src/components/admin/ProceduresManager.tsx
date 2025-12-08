@@ -6,7 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Pencil, Trash2, Link as LinkIcon, Cpu, Loader2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Link as LinkIcon, Cpu, Loader2, Wrench } from 'lucide-react';
+import { ToolGuidesManager } from './ToolGuidesManager';
 import { useToast } from '@/hooks/use-toast';
 import {
   AlertDialog,
@@ -603,39 +604,43 @@ export function ProceduresManager() {
                   No variants. Add hardware-specific variations (e.g., different clusters, ECU types).
                 </p>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {variants.map(v => (
-                    <div key={v.id} className="flex items-center justify-between p-3 rounded-lg border border-border bg-secondary/20">
-                      <div>
-                        <p className="font-medium">{v.variant_name}</p>
-                        {v.hardware_type && (
-                          <Badge variant="outline" className="text-xs mt-1">{v.hardware_type}</Badge>
-                        )}
+                    <div key={v.id} className="p-3 rounded-lg border border-border bg-secondary/20">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">{v.variant_name}</p>
+                          {v.hardware_type && (
+                            <Badge variant="outline" className="text-xs mt-1">{v.hardware_type}</Badge>
+                          )}
+                        </div>
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => openVariantDialog(v)}>
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="icon">
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete variant?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This will also delete all tool guides for this variant.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => deleteVariant(v.id)}>Delete</AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
                       </div>
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => openVariantDialog(v)}>
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete variant?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This will also delete all tool guides for this variant.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => deleteVariant(v.id)}>Delete</AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
+                      {/* Tool Guides for this variant */}
+                      <ToolGuidesManager variantId={v.id} variantName={v.variant_name} />
                     </div>
                   ))}
                 </div>
