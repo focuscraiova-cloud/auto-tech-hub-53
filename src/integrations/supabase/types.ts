@@ -14,16 +14,371 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      linked_procedures: {
+        Row: {
+          created_at: string
+          id: string
+          linked_procedure_id: string
+          procedure_id: string
+          relationship: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          linked_procedure_id: string
+          procedure_id: string
+          relationship?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          linked_procedure_id?: string
+          procedure_id?: string
+          relationship?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "linked_procedures_linked_procedure_id_fkey"
+            columns: ["linked_procedure_id"]
+            isOneToOne: false
+            referencedRelation: "procedures"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "linked_procedures_procedure_id_fkey"
+            columns: ["procedure_id"]
+            isOneToOne: false
+            referencedRelation: "procedures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      makes: {
+        Row: {
+          created_at: string
+          id: string
+          logo_url: string | null
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name?: string
+        }
+        Relationships: []
+      }
+      models: {
+        Row: {
+          created_at: string
+          id: string
+          make_id: string
+          name: string
+          years: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          make_id: string
+          name: string
+          years?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          make_id?: string
+          name?: string
+          years?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "models_make_id_fkey"
+            columns: ["make_id"]
+            isOneToOne: false
+            referencedRelation: "makes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      procedure_feedback: {
+        Row: {
+          admin_notes: string | null
+          content: string
+          created_at: string
+          feedback_type: string
+          id: string
+          procedure_id: string
+          reviewed_at: string | null
+          status: string
+          user_id: string
+          variant_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          content: string
+          created_at?: string
+          feedback_type?: string
+          id?: string
+          procedure_id: string
+          reviewed_at?: string | null
+          status?: string
+          user_id: string
+          variant_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          content?: string
+          created_at?: string
+          feedback_type?: string
+          id?: string
+          procedure_id?: string
+          reviewed_at?: string | null
+          status?: string
+          user_id?: string
+          variant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "procedure_feedback_procedure_id_fkey"
+            columns: ["procedure_id"]
+            isOneToOne: false
+            referencedRelation: "procedures"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "procedure_feedback_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "procedure_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      procedure_variants: {
+        Row: {
+          created_at: string
+          hardware_type: string | null
+          id: string
+          notes: Json | null
+          procedure_id: string
+          variant_name: string
+        }
+        Insert: {
+          created_at?: string
+          hardware_type?: string | null
+          id?: string
+          notes?: Json | null
+          procedure_id: string
+          variant_name: string
+        }
+        Update: {
+          created_at?: string
+          hardware_type?: string | null
+          id?: string
+          notes?: Json | null
+          procedure_id?: string
+          variant_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "procedure_variants_procedure_id_fkey"
+            columns: ["procedure_id"]
+            isOneToOne: false
+            referencedRelation: "procedures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      procedures: {
+        Row: {
+          category: string
+          chip_type: string | null
+          cost_max: number | null
+          cost_min: number | null
+          created_at: string
+          description: string | null
+          difficulty: string
+          id: string
+          model_id: string
+          notes: Json | null
+          pin_code: string | null
+          steps: Json | null
+          time_minutes: number | null
+          title: string
+          tools: Json | null
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          chip_type?: string | null
+          cost_max?: number | null
+          cost_min?: number | null
+          created_at?: string
+          description?: string | null
+          difficulty?: string
+          id?: string
+          model_id: string
+          notes?: Json | null
+          pin_code?: string | null
+          steps?: Json | null
+          time_minutes?: number | null
+          title: string
+          tools?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          chip_type?: string | null
+          cost_max?: number | null
+          cost_min?: number | null
+          created_at?: string
+          description?: string | null
+          difficulty?: string
+          id?: string
+          model_id?: string
+          notes?: Json | null
+          pin_code?: string | null
+          steps?: Json | null
+          time_minutes?: number | null
+          title?: string
+          tools?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "procedures_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "models"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tool_guides: {
+        Row: {
+          created_at: string
+          id: string
+          notes: Json | null
+          steps: Json | null
+          tool_name: string
+          variant_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: Json | null
+          steps?: Json | null
+          tool_name: string
+          variant_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: Json | null
+          steps?: Json | null
+          tool_name?: string
+          variant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tool_guides_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "procedure_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_tools: {
+        Row: {
+          created_at: string
+          id: string
+          tool_name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          tool_name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          tool_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +505,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
