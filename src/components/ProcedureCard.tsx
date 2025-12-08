@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { categoryLabels, difficultyColors, ServiceCategory, DifficultyLevel } from "@/data/vehicleData";
 import { Clock, DollarSign, Wrench, ChevronDown, ChevronUp, Cpu, AlertCircle, CheckCircle2, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -39,6 +39,7 @@ interface ProcedureCardProps {
 
 export function ProcedureCard({ procedure, index, procedureId }: ProcedureCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const navigate = useNavigate();
 
   const formatTime = (minutes: number) => {
     if (minutes < 60) return `${minutes} min`;
@@ -47,10 +48,29 @@ export function ProcedureCard({ procedure, index, procedureId }: ProcedureCardPr
     return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
   };
 
+  const handleCardClick = () => {
+    if (procedureId) {
+      navigate(`/procedure/${procedureId}`);
+    }
+  };
+
+  const handleQuickView = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
+  };
+
+  const handleFullGuide = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (procedureId) {
+      navigate(`/procedure/${procedureId}`);
+    }
+  };
+
   return (
     <div
+      onClick={handleCardClick}
       className={cn(
-        "card-glow bg-card border border-border rounded-xl p-5 transition-all duration-300",
+        "card-glow bg-card border border-border rounded-xl p-5 transition-all duration-300 cursor-pointer",
         "hover:border-primary/40 animate-slide-up"
       )}
       style={{ animationDelay: `${index * 100}ms` }}
@@ -127,11 +147,7 @@ export function ProcedureCard({ procedure, index, procedureId }: ProcedureCardPr
           type="button"
           variant="ghost"
           size="sm"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setIsExpanded(!isExpanded);
-          }}
+          onClick={handleQuickView}
           className="gap-2 text-primary hover:text-primary/80"
         >
           {isExpanded ? (
@@ -148,12 +164,15 @@ export function ProcedureCard({ procedure, index, procedureId }: ProcedureCardPr
         </Button>
         
         {procedureId && (
-          <Link to={`/procedure/${procedureId}`} onClick={(e) => e.stopPropagation()}>
-            <Button variant="outline" size="sm" className="gap-2">
-              <ExternalLink className="w-3 h-3" />
-              Full Guide
-            </Button>
-          </Link>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="gap-2"
+            onClick={handleFullGuide}
+          >
+            <ExternalLink className="w-3 h-3" />
+            Full Guide
+          </Button>
         )}
       </div>
 
