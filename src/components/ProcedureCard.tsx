@@ -1,14 +1,17 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Procedure, categoryLabels, difficultyColors } from "@/data/vehicleData";
-import { Clock, DollarSign, Wrench, ChevronDown, ChevronUp, Cpu, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Clock, DollarSign, Wrench, ChevronDown, ChevronUp, Cpu, AlertCircle, CheckCircle2, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface ProcedureCardProps {
   procedure: Procedure;
   index: number;
+  procedureId?: string; // Database ID for linking
 }
 
-export function ProcedureCard({ procedure, index }: ProcedureCardProps) {
+export function ProcedureCard({ procedure, index, procedureId }: ProcedureCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const formatTime = (minutes: number) => {
@@ -92,23 +95,34 @@ export function ProcedureCard({ procedure, index }: ProcedureCardProps) {
         </div>
       </div>
 
-      {/* Expand Button */}
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center gap-2 mt-4 text-sm text-primary hover:text-primary/80 transition-colors"
-      >
-        {isExpanded ? (
-          <>
-            <ChevronUp className="w-4 h-4" />
-            Hide Details
-          </>
-        ) : (
-          <>
-            <ChevronDown className="w-4 h-4" />
-            View Full Procedure
-          </>
+      {/* Action Buttons */}
+      <div className="flex items-center gap-3 mt-4">
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
+        >
+          {isExpanded ? (
+            <>
+              <ChevronUp className="w-4 h-4" />
+              Hide Details
+            </>
+          ) : (
+            <>
+              <ChevronDown className="w-4 h-4" />
+              Quick View
+            </>
+          )}
+        </button>
+        
+        {procedureId && (
+          <Link to={`/procedure/${procedureId}`}>
+            <Button variant="outline" size="sm" className="gap-2">
+              <ExternalLink className="w-3 h-3" />
+              Full Guide
+            </Button>
+          </Link>
         )}
-      </button>
+      </div>
 
       {/* Expanded Content */}
       {isExpanded && (
