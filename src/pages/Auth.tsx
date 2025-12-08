@@ -9,9 +9,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Loader2, Key, Mail, User } from 'lucide-react';
 import { z } from 'zod';
+import { PasswordStrengthIndicator, validatePasswordStrength } from '@/components/auth/PasswordStrengthIndicator';
 
 const emailSchema = z.string().email('Invalid email address');
-const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
+const passwordSchema = z.string().min(8, 'Password must be at least 8 characters');
 
 export default function Auth() {
   const [email, setEmail] = useState('');
@@ -19,6 +20,7 @@ export default function Auth() {
   const [fullName, setFullName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [activeTab, setActiveTab] = useState('signin');
   
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
@@ -30,7 +32,7 @@ export default function Auth() {
     }
   }, [user, navigate]);
 
-  const validateForm = () => {
+  const validateForm = (isSignUp: boolean = false) => {
     const newErrors: { email?: string; password?: string } = {};
     
     const emailResult = emailSchema.safeParse(email);
@@ -43,13 +45,21 @@ export default function Auth() {
       newErrors.password = passwordResult.error.errors[0].message;
     }
     
+    // Additional password strength validation for signup
+    if (isSignUp && !newErrors.password) {
+      const strengthResult = validatePasswordStrength(password);
+      if (!strengthResult.isValid) {
+        newErrors.password = strengthResult.message;
+      }
+    }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!validateForm(false)) return;
     
     setIsSubmitting(true);
     const { error } = await signIn(email, password);
@@ -74,7 +84,7 @@ export default function Auth() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!validateForm(true)) return;
     
     setIsSubmitting(true);
     const { error } = await signUp(email, password, fullName);
@@ -120,7 +130,7 @@ export default function Auth() {
           </CardHeader>
           
           <CardContent>
-            <Tabs defaultValue="signin" className="w-full">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="signin">Sign In</TabsTrigger>
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
@@ -223,6 +233,7 @@ export default function Auth() {
                         required
                       />
                     </div>
+                    <PasswordStrengthIndicator password={password} />
                     {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
                   </div>
                   
