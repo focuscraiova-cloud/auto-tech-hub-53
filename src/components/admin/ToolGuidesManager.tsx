@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Pencil, Trash2, Wrench, ChevronDown, ChevronUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { StepsEditor } from './StepsEditor';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -58,8 +59,8 @@ export function ToolGuidesManager({ variantId, variantName }: ToolGuidesManagerP
   // Form state
   const [form, setForm] = useState({
     tool_name: '',
-    steps: '',
-    notes: '',
+    steps: [] as string[],
+    notes: [] as string[],
   });
 
   useEffect(() => {
@@ -92,15 +93,15 @@ export function ToolGuidesManager({ variantId, variantName }: ToolGuidesManagerP
       setEditingGuide(guide);
       setForm({
         tool_name: guide.tool_name,
-        steps: guide.steps.join('\n'),
-        notes: guide.notes.join('\n'),
+        steps: guide.steps,
+        notes: guide.notes,
       });
     } else {
       setEditingGuide(null);
       setForm({
         tool_name: '',
-        steps: '',
-        notes: '',
+        steps: [],
+        notes: [],
       });
     }
     setDialogOpen(true);
@@ -112,14 +113,11 @@ export function ToolGuidesManager({ variantId, variantName }: ToolGuidesManagerP
       return;
     }
 
-    const steps = form.steps.split('\n').filter(Boolean);
-    const notes = form.notes.split('\n').filter(Boolean);
-
     const guideData = {
       variant_id: variantId,
       tool_name: form.tool_name.trim(),
-      steps,
-      notes,
+      steps: form.steps,
+      notes: form.notes,
     };
 
     if (editingGuide) {
@@ -261,21 +259,19 @@ export function ToolGuidesManager({ variantId, variantName }: ToolGuidesManagerP
               </p>
             </div>
             <div>
-              <Label>Steps (one per line)</Label>
-              <Textarea
-                value={form.steps}
-                onChange={e => setForm({ ...form, steps: e.target.value })}
-                rows={8}
-                placeholder="Connect VVDI Prog to cluster via included wiring&#10;Power on and select BMW > F Series > 6WA&#10;Read EEPROM data and save backup&#10;..."
+              <StepsEditor
+                steps={form.steps}
+                onChange={(steps) => setForm({ ...form, steps })}
+                label="Steps"
+                placeholder="Add a step..."
               />
             </div>
             <div>
-              <Label>Notes (one per line, optional)</Label>
-              <Textarea
-                value={form.notes}
-                onChange={e => setForm({ ...form, notes: e.target.value })}
-                rows={3}
-                placeholder="Firmware v4.9.0 or higher required&#10;Use 12V external power supply for stability"
+              <StepsEditor
+                steps={form.notes}
+                onChange={(notes) => setForm({ ...form, notes })}
+                label="Notes (optional)"
+                placeholder="Add a note..."
               />
             </div>
           </div>

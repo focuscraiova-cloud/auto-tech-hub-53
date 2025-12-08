@@ -21,6 +21,8 @@ interface DbProcedure {
   cost_max: number;
   chip_type: string | null;
   tools: any[];
+  steps: any[];
+  notes: any[];
   model: {
     id: string;
     name: string;
@@ -57,12 +59,12 @@ const Index = () => {
   const fetchData = async () => {
     setIsLoadingDb(true);
     
-    // Fetch procedures
+    // Fetch procedures with steps
     const { data: procData } = await supabase
       .from('procedures')
       .select(`
         id, title, description, category, difficulty, time_minutes,
-        cost_min, cost_max, chip_type, tools,
+        cost_min, cost_max, chip_type, tools, steps, notes,
         model:models (
           id, name,
           make:makes (id, name)
@@ -95,8 +97,8 @@ const Index = () => {
       tools: Array.isArray(p.tools) ? p.tools.map((t: any) => 
         typeof t === 'string' ? { name: t, required: true } : t
       ) : [],
-      steps: [],
-      notes: [],
+      steps: Array.isArray(p.steps) ? p.steps : [],
+      notes: Array.isArray(p.notes) ? p.notes : [],
       makeName: p.model?.make?.name,
       modelName: p.model?.name
     }));
