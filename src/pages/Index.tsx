@@ -38,6 +38,7 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [dbProcedures, setDbProcedures] = useState<DbProcedure[]>([]);
   const [isLoadingDb, setIsLoadingDb] = useState(true);
+  const [counts, setCounts] = useState({ makes: 0, models: 0 });
 
   // Redirect to auth if not logged in
   useEffect(() => {
@@ -46,16 +47,18 @@ const Index = () => {
     }
   }, [user, authLoading, navigate]);
 
-  // Fetch procedures from database
+  // Fetch data from database
   useEffect(() => {
     if (user) {
-      fetchDbProcedures();
+      fetchData();
     }
   }, [user]);
 
-  const fetchDbProcedures = async () => {
+  const fetchData = async () => {
     setIsLoadingDb(true);
-    const { data, error } = await supabase
+    
+    // Fetch procedures
+    const { data: procData } = await supabase
       .from('procedures')
       .select(`
         id, title, description, category, difficulty, time_minutes,
@@ -66,9 +69,15 @@ const Index = () => {
         )
       `);
     
-    if (data && !error) {
-      setDbProcedures(data as unknown as DbProcedure[]);
+    if (procData) {
+      setDbProcedures(procData as unknown as DbProcedure[]);
     }
+
+    // Fetch counts
+    const { count: makesCount } = await supabase.from('makes').select('*', { count: 'exact', head: true });
+    const { count: modelsCount } = await supabase.from('models').select('*', { count: 'exact', head: true });
+    
+    setCounts({ makes: makesCount || 0, models: modelsCount || 0 });
     setIsLoadingDb(false);
   };
 
@@ -125,7 +134,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header totalMakes={0} totalModels={0} />
+      <Header totalMakes={counts.makes} totalModels={counts.models} />
       <main className="container mx-auto px-4 py-8">
         {/* Hero Section */}
         <div className="text-center mb-10">
