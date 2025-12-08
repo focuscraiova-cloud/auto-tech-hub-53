@@ -8,6 +8,7 @@ import { useVehicleData } from '@/contexts/VehicleDataContext';
 import { MakeForm } from './MakeForm';
 import { ModelForm } from './ModelForm';
 import { ProcedureForm } from './ProcedureForm';
+import { FeedbackModeration } from './FeedbackModeration';
 import { VehicleModel, Procedure } from '@/data/vehicleData';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -185,10 +186,11 @@ export function AdminTabs() {
       </div>
 
       <Tabs defaultValue="makes" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="makes">Makes</TabsTrigger>
           <TabsTrigger value="models">Models</TabsTrigger>
           <TabsTrigger value="procedures">Procedures</TabsTrigger>
+          <TabsTrigger value="feedback">Feedback</TabsTrigger>
         </TabsList>
 
         {/* Makes Tab */}
@@ -434,6 +436,11 @@ export function AdminTabs() {
           ) : (
             <p className="text-muted-foreground text-center py-8">Select a make and model to view and manage procedures</p>
           )}
+        </TabsContent>
+
+        {/* Feedback Tab */}
+        <TabsContent value="feedback" className="space-y-4">
+          <FeedbackModeration />
         </TabsContent>
       </Tabs>
     </div>
