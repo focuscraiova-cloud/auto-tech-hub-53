@@ -24,9 +24,6 @@ interface Feedback {
   feedback_type: string;
   status: string;
   created_at: string;
-  profile: {
-    full_name: string | null;
-  } | null;
 }
 
 interface FeedbackSectionProps {
@@ -49,7 +46,7 @@ export function FeedbackSection({ procedureId, variantId }: FeedbackSectionProps
   }, [procedureId]);
 
   const fetchFeedbacks = async () => {
-    // Only fetch full_name to avoid exposing email
+    // Don't join profiles to avoid exposing user data
     const { data } = await supabase
       .from('procedure_feedback')
       .select(`
@@ -57,10 +54,7 @@ export function FeedbackSection({ procedureId, variantId }: FeedbackSectionProps
         content,
         feedback_type,
         status,
-        created_at,
-        profile:profiles (
-          full_name
-        )
+        created_at
       `)
       .eq('procedure_id', procedureId)
       .eq('status', 'approved')
@@ -203,7 +197,7 @@ export function FeedbackSection({ procedureId, variantId }: FeedbackSectionProps
                     </Badge>
                     <span className="text-xs text-muted-foreground flex items-center gap-1">
                       <User className="h-3 w-3" />
-                      {feedback.profile?.full_name || 'Anonymous'}
+                      Community Member
                     </span>
                   </div>
                   <span className="text-xs text-muted-foreground">
