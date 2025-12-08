@@ -148,17 +148,25 @@ export default function Procedure() {
       .from('linked_procedures')
       .select(`
         relationship,
-        linked_procedure:procedures!linked_procedures_linked_procedure_id_fkey (
-          id,
-          title,
-          category,
-          difficulty
-        )
+        linked_procedure_id
       `)
       .eq('procedure_id', procedureId);
 
-    if (linkedData) {
-      setLinkedProcedures(linkedData);
+    if (linkedData && linkedData.length > 0) {
+      // Fetch the actual procedure details for each linked procedure
+      const linkedIds = linkedData.map(l => l.linked_procedure_id);
+      const { data: linkedProcData } = await supabase
+        .from('procedures')
+        .select('id, title, category, difficulty')
+        .in('id', linkedIds);
+      
+      if (linkedProcData) {
+        const mapped = linkedData.map(l => ({
+          relationship: l.relationship,
+          linked_procedure: linkedProcData.find(p => p.id === l.linked_procedure_id)
+        })).filter(l => l.linked_procedure);
+        setLinkedProcedures(mapped);
+      }
     }
 
     setIsLoading(false);

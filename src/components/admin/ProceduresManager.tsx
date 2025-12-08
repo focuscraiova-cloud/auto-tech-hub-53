@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Pencil, Trash2, Link as LinkIcon, Cpu, Loader2, Wrench } from 'lucide-react';
 import { ToolGuidesManager } from './ToolGuidesManager';
+import { StepsEditor } from './StepsEditor';
 import { useToast } from '@/hooks/use-toast';
 import {
   AlertDialog,
@@ -130,8 +131,8 @@ export function ProceduresManager() {
     chip_type: '',
     pin_code: '',
     tools: '',
-    steps: '',
-    notes: '',
+    steps: [] as string[],
+    notes: [] as string[],
   });
   
   const [variantForm, setVariantForm] = useState({
@@ -276,8 +277,8 @@ export function ProceduresManager() {
         chip_type: procedure.chip_type || '',
         pin_code: procedure.pin_code || '',
         tools: procedure.tools.map(t => `${t.name}${t.required ? '' : ' (optional)'}`).join('\n'),
-        steps: procedure.steps.join('\n'),
-        notes: procedure.notes.join('\n'),
+        steps: procedure.steps,
+        notes: procedure.notes,
       });
     } else {
       setEditingProcedure(null);
@@ -292,8 +293,8 @@ export function ProceduresManager() {
         chip_type: '',
         pin_code: '',
         tools: '',
-        steps: '',
-        notes: '',
+        steps: [],
+        notes: [],
       });
     }
     setProcedureDialogOpen(true);
@@ -304,8 +305,8 @@ export function ProceduresManager() {
       const isOptional = t.includes('(optional)');
       return { name: t.replace(' (optional)', '').trim(), required: !isOptional };
     });
-    const steps = procedureForm.steps.split('\n').filter(Boolean);
-    const notes = procedureForm.notes.split('\n').filter(Boolean);
+    const steps = procedureForm.steps;
+    const notes = procedureForm.notes;
 
     const procedureData = {
       title: procedureForm.title,
@@ -760,12 +761,20 @@ export function ProceduresManager() {
                 <Textarea value={procedureForm.tools} onChange={e => setProcedureForm({ ...procedureForm, tools: e.target.value })} rows={3} placeholder="VVDI Prog&#10;Xhorse Key Tool (optional)" />
               </div>
               <div className="col-span-2">
-                <Label>Steps (one per line)</Label>
-                <Textarea value={procedureForm.steps} onChange={e => setProcedureForm({ ...procedureForm, steps: e.target.value })} rows={5} />
+                <StepsEditor
+                  steps={procedureForm.steps}
+                  onChange={(steps) => setProcedureForm({ ...procedureForm, steps })}
+                  label="Procedure Steps"
+                  placeholder="Add a step..."
+                />
               </div>
               <div className="col-span-2">
-                <Label>Notes (one per line)</Label>
-                <Textarea value={procedureForm.notes} onChange={e => setProcedureForm({ ...procedureForm, notes: e.target.value })} rows={3} />
+                <StepsEditor
+                  steps={procedureForm.notes}
+                  onChange={(notes) => setProcedureForm({ ...procedureForm, notes })}
+                  label="Important Notes"
+                  placeholder="Add a note..."
+                />
               </div>
             </div>
           </div>
