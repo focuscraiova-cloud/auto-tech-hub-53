@@ -185,7 +185,7 @@ const Index = () => {
             {filteredProcedures.map((procedure, index) => (
               <ProcedureCard 
                 key={procedure.id} 
-                procedure={procedure as any} 
+                procedure={procedure} 
                 index={index}
                 procedureId={procedure.id}
               />

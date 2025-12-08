@@ -1,14 +1,28 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Procedure, categoryLabels, difficultyColors } from "@/data/vehicleData";
+import { categoryLabels, difficultyColors, ServiceCategory, DifficultyLevel, Tool } from "@/data/vehicleData";
 import { Clock, DollarSign, Wrench, ChevronDown, ChevronUp, Cpu, AlertCircle, CheckCircle2, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
+interface DisplayProcedure {
+  id: string;
+  category: ServiceCategory;
+  title: string;
+  description: string;
+  timeMinutes: number;
+  difficulty: DifficultyLevel;
+  cost: { min: number; max: number };
+  tools: Tool[];
+  steps: string[];
+  notes?: string[];
+  chipType?: string | null;
+}
+
 interface ProcedureCardProps {
-  procedure: Procedure;
+  procedure: DisplayProcedure;
   index: number;
-  procedureId?: string; // Database ID for linking
+  procedureId?: string;
 }
 
 export function ProcedureCard({ procedure, index, procedureId }: ProcedureCardProps) {
@@ -96,10 +110,17 @@ export function ProcedureCard({ procedure, index, procedureId }: ProcedureCardPr
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-3 mt-4">
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
+      <div className="flex items-center gap-3 mt-4 pt-3 border-t border-border/50">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsExpanded(!isExpanded);
+          }}
+          className="gap-2 text-primary hover:text-primary/80"
         >
           {isExpanded ? (
             <>
@@ -112,10 +133,10 @@ export function ProcedureCard({ procedure, index, procedureId }: ProcedureCardPr
               Quick View
             </>
           )}
-        </button>
+        </Button>
         
         {procedureId && (
-          <Link to={`/procedure/${procedureId}`}>
+          <Link to={`/procedure/${procedureId}`} onClick={(e) => e.stopPropagation()}>
             <Button variant="outline" size="sm" className="gap-2">
               <ExternalLink className="w-3 h-3" />
               Full Guide
