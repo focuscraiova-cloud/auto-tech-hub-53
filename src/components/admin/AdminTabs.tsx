@@ -9,6 +9,7 @@ import { MakeForm } from './MakeForm';
 import { ModelForm } from './ModelForm';
 import { ProcedureForm } from './ProcedureForm';
 import { FeedbackModeration } from './FeedbackModeration';
+import { ProceduresManager } from './ProceduresManager';
 import { VehicleModel, Procedure } from '@/data/vehicleData';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -185,13 +186,19 @@ export function AdminTabs() {
         </AlertDialog>
       </div>
 
-      <Tabs defaultValue="makes" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="makes">Makes</TabsTrigger>
-          <TabsTrigger value="models">Models</TabsTrigger>
-          <TabsTrigger value="procedures">Procedures</TabsTrigger>
+      <Tabs defaultValue="procedures-db" className="w-full">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="procedures-db">Procedures (DB)</TabsTrigger>
+          <TabsTrigger value="makes">Makes (Local)</TabsTrigger>
+          <TabsTrigger value="models">Models (Local)</TabsTrigger>
+          <TabsTrigger value="procedures">Procedures (Local)</TabsTrigger>
           <TabsTrigger value="feedback">Feedback</TabsTrigger>
         </TabsList>
+
+        {/* Procedures from Supabase */}
+        <TabsContent value="procedures-db" className="space-y-4">
+          <ProceduresManager />
+        </TabsContent>
 
         {/* Makes Tab */}
         <TabsContent value="makes" className="space-y-4">
