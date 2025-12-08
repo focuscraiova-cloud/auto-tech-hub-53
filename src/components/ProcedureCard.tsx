@@ -1,11 +1,21 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { categoryLabels, difficultyColors, ServiceCategory, DifficultyLevel, Tool } from "@/data/vehicleData";
+import { categoryLabels, difficultyColors, ServiceCategory, DifficultyLevel } from "@/data/vehicleData";
 import { Clock, DollarSign, Wrench, ChevronDown, ChevronUp, Cpu, AlertCircle, CheckCircle2, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-interface DisplayProcedure {
+interface ToolItem {
+  name: string;
+  required?: boolean;
+}
+
+interface StepItem {
+  title?: string;
+  description?: string;
+}
+
+export interface DisplayProcedure {
   id: string;
   category: ServiceCategory;
   title: string;
@@ -13,10 +23,12 @@ interface DisplayProcedure {
   timeMinutes: number;
   difficulty: DifficultyLevel;
   cost: { min: number; max: number };
-  tools: Tool[];
-  steps: string[];
-  notes?: string[];
+  tools: ToolItem[];
+  steps: (string | StepItem)[];
+  notes?: (string | { content: string })[];
   chipType?: string | null;
+  makeName?: string;
+  modelName?: string;
 }
 
 interface ProcedureCardProps {
@@ -155,12 +167,15 @@ export function ProcedureCard({ procedure, index, procedureId }: ProcedureCardPr
               Procedure Steps
             </h4>
             <ol className="space-y-2 ml-4">
-              {procedure.steps.map((step, i) => (
-                <li key={i} className="text-sm text-muted-foreground flex gap-3">
-                  <span className="font-mono text-primary shrink-0">{i + 1}.</span>
-                  {step}
-                </li>
-              ))}
+              {procedure.steps.map((step, i) => {
+                const stepText = typeof step === 'string' ? step : (step.title || step.description || '');
+                return (
+                  <li key={i} className="text-sm text-muted-foreground flex gap-3">
+                    <span className="font-mono text-primary shrink-0">{i + 1}.</span>
+                    {stepText}
+                  </li>
+                );
+              })}
             </ol>
           </div>
 
@@ -196,12 +211,15 @@ export function ProcedureCard({ procedure, index, procedureId }: ProcedureCardPr
                 Important Notes
               </h4>
               <ul className="space-y-1">
-                {procedure.notes.map((note, i) => (
-                  <li key={i} className="text-sm text-muted-foreground flex gap-2">
-                    <span className="text-warning">•</span>
-                    {note}
-                  </li>
-                ))}
+                {procedure.notes.map((note, i) => {
+                  const noteText = typeof note === 'string' ? note : (note.content || '');
+                  return (
+                    <li key={i} className="text-sm text-muted-foreground flex gap-2">
+                      <span className="text-warning">•</span>
+                      {noteText}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}

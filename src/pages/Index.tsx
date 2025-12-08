@@ -118,6 +118,8 @@ const Index = () => {
         p.title.toLowerCase().includes(query) ||
         p.description.toLowerCase().includes(query) ||
         p.chipType?.toLowerCase().includes(query) ||
+        p.makeName?.toLowerCase().includes(query) ||
+        p.modelName?.toLowerCase().includes(query) ||
         p.tools.some((t: any) => t.name?.toLowerCase().includes(query))
       );
     }
