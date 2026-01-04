@@ -39,7 +39,7 @@ export function Header({ totalMakes = 6, totalModels = 8 }: HeaderProps) {
           <div className="flex items-center gap-4">
             <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
               <Database className="w-4 h-4" />
-              <span className="font-mono">{totalMakes} Makes • {totalModels} Models</span>
+              <span className="font-mono">{totalMakes} Makes / {totalModels} Models</span>
             </div>
             
             {isLoading ? (

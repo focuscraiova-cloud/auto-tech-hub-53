@@ -7,6 +7,7 @@ import { SearchBar } from "@/components/SearchBar";
 import { StatsCards } from "@/components/StatsCards";
 import { ServiceCategory } from "@/data/vehicleData";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import { Search, Filter, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -35,6 +36,7 @@ interface DbProcedure {
 
 const Index = () => {
   const { user, isLoading: authLoading } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [categoryFilter, setCategoryFilter] = useState<ServiceCategory | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState("");
@@ -42,23 +44,23 @@ const Index = () => {
   const [isLoadingDb, setIsLoadingDb] = useState(true);
   const [counts, setCounts] = useState({ makes: 0, models: 0 });
 
-  // Auth redirect disabled - keeping code for later
-  // useEffect(() => {
-  //   if (!authLoading && !user) {
-  //     navigate('/auth');
-  //   }
-  // }, [user, authLoading, navigate]);
-
-  // Fetch data from database
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (!authLoading && !user) {
+      navigate('/auth');
+    }
+  }, [user, authLoading, navigate]);
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      fetchData();
+    }
+  }, [authLoading, user]);
 
   const fetchData = async () => {
     setIsLoadingDb(true);
     
     // Fetch procedures with steps
-    const { data: procData } = await supabase
+    const { data: procData, error: procError } = await supabase
       .from('procedures')
       .select(`
         id, title, description, category, difficulty, time_minutes,
@@ -69,15 +71,23 @@ const Index = () => {
         )
       `);
     
-    if (procData) {
-      setDbProcedures(procData as unknown as DbProcedure[]);
+    if (procError) {
+      toast({ title: 'Error', description: procError.message, variant: 'destructive' });
     }
+    setDbProcedures(procData ? (procData as unknown as DbProcedure[]) : []);
 
     // Fetch counts
-    const { count: makesCount } = await supabase.from('makes').select('*', { count: 'exact', head: true });
-    const { count: modelsCount } = await supabase.from('models').select('*', { count: 'exact', head: true });
+    const { count: makesCount, error: makesError } = await supabase.from('makes').select('*', { count: 'exact', head: true });
+    const { count: modelsCount, error: modelsError } = await supabase.from('models').select('*', { count: 'exact', head: true });
     
-    setCounts({ makes: makesCount || 0, models: modelsCount || 0 });
+    if (makesError) {
+      toast({ title: 'Error', description: makesError.message, variant: 'destructive' });
+    }
+    if (modelsError) {
+      toast({ title: 'Error', description: modelsError.message, variant: 'destructive' });
+    }
+
+    setCounts({ makes: makesCount ?? 0, models: modelsCount ?? 0 });
     setIsLoadingDb(false);
   };
 
@@ -125,7 +135,18 @@ const Index = () => {
     return procedures;
   }, [displayProcedures, categoryFilter, searchQuery]);
 
-  // Show loading state
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
   if (isLoadingDb) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -206,7 +227,7 @@ const Index = () => {
       <footer className="border-t border-border mt-16 py-8">
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm text-muted-foreground">
-            AutoTech Pro Database • Built for automotive technicians
+            AutoTech Pro Database - Built for automotive technicians
           </p>
         </div>
       </footer>

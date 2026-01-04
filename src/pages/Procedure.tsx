@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Clock, DollarSign, Wrench, AlertTriangle, Cpu, Link as LinkIcon, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Clock, DollarSign, Wrench, AlertTriangle, Cpu, KeyRound, ChevronRight } from 'lucide-react';
 import { VariantSelector } from '@/components/procedure/VariantSelector';
 import { ToolSelector } from '@/components/procedure/ToolSelector';
 import { StepGuide } from '@/components/procedure/StepGuide';
@@ -19,12 +18,12 @@ import type { DifficultyLevel } from '@/data/vehicleData';
 interface ProcedureData {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   category: string;
   difficulty: string;
-  time_minutes: number;
-  cost_min: number;
-  cost_max: number;
+  time_minutes: number | null;
+  cost_min: number | null;
+  cost_max: number | null;
   chip_type: string | null;
   pin_code: string | null;
   tools: any[];
@@ -64,7 +63,8 @@ const categoryLabels: Record<string, string> = {
 
 export default function Procedure() {
   const { procedureId } = useParams();
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
+  const navigate = useNavigate();
   
   const [procedure, setProcedure] = useState<ProcedureData | null>(null);
   const [variants, setVariants] = useState<Variant[]>([]);
@@ -75,10 +75,16 @@ export default function Procedure() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (procedureId) {
+    if (!authLoading && !user) {
+      navigate('/auth');
+    }
+  }, [authLoading, user, navigate]);
+
+  useEffect(() => {
+    if (procedureId && user && !authLoading) {
       fetchProcedure();
     }
-  }, [procedureId]);
+  }, [procedureId, user, authLoading]);
 
   useEffect(() => {
     if (selectedVariant) {
@@ -191,12 +197,24 @@ export default function Procedure() {
     }
   };
 
-  const formatTime = (minutes: number) => {
+  const formatTime = (minutes: number | null) => {
+    if (minutes === null || minutes === undefined) return 'N/A';
     if (minutes < 60) return `${minutes} min`;
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
   };
+
+  const formatCost = (min: number | null, max: number | null) => {
+    if (min === null && max === null) return 'N/A';
+    if (min !== null && max !== null) return `$${min}-${max}`;
+    if (min !== null) return `$${min}+`;
+    return `Up to $${max}`;
+  };
+
+  if (!authLoading && !user) {
+    return null;
+  }
 
   if (isLoading) {
     return (
@@ -267,7 +285,7 @@ export default function Procedure() {
                 <CardTitle className="text-2xl md:text-3xl font-bold font-mono">
                   {procedure.title}
                 </CardTitle>
-                <p className="text-muted-foreground mt-2">{procedure.description}</p>
+                <p className="text-muted-foreground mt-2">{procedure.description || 'No description provided.'}</p>
               </div>
               <Badge className={`${difficultyColors[procedure.difficulty as DifficultyLevel]} border`}>
                 {procedure.difficulty.charAt(0).toUpperCase() + procedure.difficulty.slice(1)}
@@ -290,7 +308,7 @@ export default function Procedure() {
                 <DollarSign className="h-5 w-5 text-success" />
                 <div>
                   <p className="text-xs text-muted-foreground">Cost</p>
-                  <p className="font-mono font-semibold">${procedure.cost_min}-{procedure.cost_max}</p>
+                  <p className="font-mono font-semibold">{formatCost(procedure.cost_min, procedure.cost_max)}</p>
                 </div>
               </div>
               
@@ -300,6 +318,16 @@ export default function Procedure() {
                   <div>
                     <p className="text-xs text-muted-foreground">Chip</p>
                     <p className="font-mono font-semibold text-sm">{procedure.chip_type}</p>
+                  </div>
+                </div>
+              )}
+
+              {procedure.pin_code && (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-secondary/50">
+                  <KeyRound className="h-5 w-5 text-primary" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">PIN Code</p>
+                    <p className="font-mono font-semibold text-sm">{procedure.pin_code}</p>
                   </div>
                 </div>
               )}
@@ -370,7 +398,7 @@ export default function Procedure() {
               <ul className="space-y-2">
                 {displayNotes.map((note: string, i: number) => (
                   <li key={i} className="flex items-start gap-2 text-muted-foreground">
-                    <span className="text-warning mt-1">•</span>
+                    <span className="text-warning mt-1">-</span>
                     {note}
                   </li>
                 ))}

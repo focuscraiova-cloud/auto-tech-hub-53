@@ -127,7 +127,7 @@ export function ProcedureCard({ procedure, index, procedureId }: ProcedureCardPr
             {procedure.tools.slice(0, 3).map((tool, i) => (
               <div key={i} className="text-xs font-mono text-foreground flex items-center gap-1">
                 <span className={tool.required ? "text-primary" : "text-muted-foreground"}>
-                  {tool.required ? "•" : "○"}
+                  {tool.required ? "req" : "opt"}
                 </span>
                 {tool.name}
               </div>
@@ -234,7 +234,7 @@ export function ProcedureCard({ procedure, index, procedureId }: ProcedureCardPr
                   const noteText = typeof note === 'string' ? note : (note.content || '');
                   return (
                     <li key={i} className="text-sm text-muted-foreground flex gap-2">
-                      <span className="text-warning">•</span>
+                      <span className="text-warning">-</span>
                       {noteText}
                     </li>
                   );

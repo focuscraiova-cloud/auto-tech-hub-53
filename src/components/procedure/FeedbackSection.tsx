@@ -135,9 +135,9 @@ export function FeedbackSection({ procedureId, variantId }: FeedbackSectionProps
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="tip">💡 Tip</SelectItem>
-                <SelectItem value="correction">✏️ Correction</SelectItem>
-                <SelectItem value="question">❓ Question</SelectItem>
+                <SelectItem value="tip">Tip</SelectItem>
+                <SelectItem value="correction">Correction</SelectItem>
+                <SelectItem value="question">Question</SelectItem>
               </SelectContent>
             </Select>
             <span className="text-sm text-muted-foreground">Share your experience</span>

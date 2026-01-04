@@ -231,7 +231,7 @@ export default function Auth() {
                     <Input
                       id="new-password"
                       type="password"
-                      placeholder="••••••••"
+                      placeholder="Enter new password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="pl-10"
@@ -249,7 +249,7 @@ export default function Auth() {
                     <Input
                       id="confirm-password"
                       type="password"
-                      placeholder="••••••••"
+                      placeholder="Confirm new password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       className="pl-10"
@@ -386,7 +386,7 @@ export default function Auth() {
                       <Input
                         id="signin-password"
                         type="password"
-                        placeholder="••••••••"
+                        placeholder="Enter password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="pl-10"
@@ -458,7 +458,7 @@ export default function Auth() {
                       <Input
                         id="signup-password"
                         type="password"
-                        placeholder="••••••••"
+                        placeholder="Create password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="pl-10"
