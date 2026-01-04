@@ -42,19 +42,17 @@ const Index = () => {
   const [isLoadingDb, setIsLoadingDb] = useState(true);
   const [counts, setCounts] = useState({ makes: 0, models: 0 });
 
-  // Redirect to auth if not logged in
-  useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/auth');
-    }
-  }, [user, authLoading, navigate]);
+  // Auth redirect disabled - keeping code for later
+  // useEffect(() => {
+  //   if (!authLoading && !user) {
+  //     navigate('/auth');
+  //   }
+  // }, [user, authLoading, navigate]);
 
   // Fetch data from database
   useEffect(() => {
-    if (user) {
-      fetchData();
-    }
-  }, [user]);
+    fetchData();
+  }, []);
 
   const fetchData = async () => {
     setIsLoadingDb(true);
@@ -128,7 +126,7 @@ const Index = () => {
   }, [displayProcedures, categoryFilter, searchQuery]);
 
   // Show loading state
-  if (authLoading || (user && isLoadingDb)) {
+  if (isLoadingDb) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
