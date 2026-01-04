@@ -75,14 +75,7 @@ export function Header({ totalMakes = 6, totalModels = 8 }: HeaderProps) {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            ) : (
-              <Link to="/auth">
-                <Button variant="outline" size="sm" className="gap-2">
-                  <User className="h-4 w-4" />
-                  Sign In
-                </Button>
-              </Link>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
